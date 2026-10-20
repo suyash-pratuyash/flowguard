@@ -1,0 +1,43 @@
+# 00 - Scope
+Status: DRAFT v1.0 (awaiting sign-off in spec/SIGNOFF.md)
+
+## Working model
+The team works as one. One approver (project lead) signs off on decisions. Roles (n8n / API / spec-QA) are
+focus areas only, not approval gates. One branch (`main`) unless a conflict actually appears.
+
+## Problem (2-3 sentences)
+Automated workflows fail from rate limits, transient outages and bad data. Teams find out late
+and diagnose manually, and blind retries can waste quota or repeat side effects.
+
+## Target user
+Small teams and builders running business-critical n8n automations.
+
+## Solution
+A reliability layer: capture failure -> classify (deterministic) -> policy gate -> bounded
+action (retry / stop / escalate) -> verify -> audit. AI may recommend later; policy authorizes.
+
+## One-sentence USP
+Not a retry script: failure-class-aware, bounded, policy-gated, verified and auditable recovery.
+
+## Priorities
+| Priority | Capability |
+|---|---|
+| P0 | /health, /api/target, RATE_LIMIT_ONCE, bounded wait/retry, verified success, attempt evidence |
+| P1 | SERVICE_UNAVAILABLE -> ESCALATED at cap; INVALID_DATA -> NEEDS_REVIEW (no retry) |
+| P2 | LLM structured diagnosis behind policy gate (only after P0/P1 stable) |
+| P3 | Dashboard, notifications, extra integrations (out of sprint scope) |
+
+## Explicitly out of scope
+Universal self-healing; modifying/deleting production workflows; payments or irreversible
+actions; multi-agent, Kubernetes, custom n8n nodes, fine-tuning; production-reliability claims;
+invented metrics or mentor feedback.
+
+## Implementation status (update from evidence only)
+| Component | Label |
+|---|---|
+| FastAPI fault-injection API | prototype (code written; must be re-run on the team machine before claiming 'implemented') |
+| n8n recovery workflow | planned |
+| Policy gate (n8n IF/Switch) | planned |
+| Audit log (JSONL) | planned |
+| LLM diagnosis | planned |
+| Dashboard / UI | planned (optional) |
