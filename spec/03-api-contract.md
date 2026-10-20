@@ -1,6 +1,5 @@
-# 03 - API Contract (FROZEN on sign-off)
-Approver: project lead (single sign-off) | Version: v1.0 | Status: DRAFT until SIGNOFF.md is complete
-
+# 03 - API Contract (FROZEN v1.0)
+Approver: project lead (single sign-off) | Version: v1.0 | Status: FROZEN — approved 2026-10-20
 Any change to fields, scenario names, outputs or safety rules needs the project lead's approval
 and one reviewed commit updating this file and every caller.
 
@@ -60,7 +59,7 @@ Safety invariant: "recovery attempted" is NOT "recovery verified".
 
 Max attempts = 2. Only SAFE_READ is auto-retryable. Never an unbounded loop.
 
-## Audit event (JSONL, one object per line) - PROPOSED, needs approval
+## Audit event (JSONL, one object per line) - APPROVED on 2026-10-20
 ```json
 {"event_id":"evt-001","incident_id":"demo-001","event_type":"ATTEMPT_FAILED",
  "timestamp":"2026-10-20T10:00:00Z",

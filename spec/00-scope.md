@@ -1,5 +1,5 @@
 # 00 - Scope
-Status: DRAFT v1.0 (awaiting sign-off in spec/SIGNOFF.md)
+Status: APPROVED v1.0 (lead sign-off recorded in spec/SIGNOFF.md on 2026-10-20)
 
 ## Working model
 The team works as one. One approver (project lead) signs off on decisions. Roles (n8n / API / spec-QA) are
@@ -35,7 +35,7 @@ invented metrics or mentor feedback.
 ## Implementation status (update from evidence only)
 | Component | Label |
 |---|---|
-| FastAPI fault-injection API | prototype (code written; must be re-run on the team machine before claiming 'implemented') |
+| FastAPI fault-injection API | implemented (automated tests, five manual checks and /docs verified locally on 2026-10-20) |
 | n8n recovery workflow | planned |
 | Policy gate (n8n IF/Switch) | planned |
 | Audit log (JSONL) | planned |
