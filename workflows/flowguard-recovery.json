@@ -1,0 +1,343 @@
+{
+  "name": "FlowGuard Recovery Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "request_id", "value": "demo-001" },
+            { "name": "scenario", "value": "RATE_LIMIT_ONCE" },
+            { "name": "operation", "value": "SAFE_READ" }
+          ],
+          "number": [
+            { "name": "attempt", "value": 1 },
+            { "name": "max_attempts", "value": 2 }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2",
+      "name": "Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/api/target",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  request_id: $('Input').item.json.request_id,\n  scenario: $('Input').item.json.scenario,\n  attempt: $('Input').item.json.attempt,\n  payload: { requiredField: 'demo-value' }\n}) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json",
+              "fullResponse": true
+            }
+          },
+          "timeout": 3000
+        }
+      },
+      "id": "3",
+      "name": "HTTP Request: Attempt 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "dataType": "number",
+        "value1": "={{ $json.statusCode }}",
+        "rules": {
+          "rules": [
+            {
+              "operation": "equal",
+              "value2": 429
+            }
+          ]
+        }
+      },
+      "id": "4",
+      "name": "Policy Gate: Is 429?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [880, 300]
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "seconds"
+      },
+      "id": "5",
+      "name": "Wait 2s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1100, 240]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "request_id", "value": "={{ $('Input').item.json.request_id }}" },
+            { "name": "scenario", "value": "={{ $('Input').item.json.scenario }}" },
+            { "name": "operation", "value": "={{ $('Input').item.json.operation }}" }
+          ],
+          "number": [
+            { "name": "attempt", "value": 2 },
+            { "name": "max_attempts", "value": 2 }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6",
+      "name": "Attempt 2 Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1300, 240]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/api/target",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  request_id: $('Attempt 2 Input').item.json.request_id,\n  scenario: $('Attempt 2 Input').item.json.scenario,\n  attempt: $('Attempt 2 Input').item.json.attempt,\n  payload: { requiredField: 'demo-value' }\n}) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json",
+              "fullResponse": true
+            }
+          },
+          "timeout": 3000
+        }
+      },
+      "id": "7",
+      "name": "HTTP Request: Attempt 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1520, 240]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.statusCode }}",
+              "operation": "equal",
+              "value2": 200
+            }
+          ],
+          "string": [
+            {
+              "value1": "={{ $json.body.status }}",
+              "operation": "equal",
+              "value2": "ok"
+            },
+            {
+              "value1": "={{ $json.body.request_id }}",
+              "operation": "equal",
+              "value2": "={{ $('Input').item.json.request_id }}"
+            }
+          ]
+        }
+      },
+      "id": "8",
+      "name": "IF: Verified Recovery?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1760, 240]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "terminal_status", "value": "RECOVERED" },
+            { "name": "scenario", "value": "={{ $('Input').item.json.scenario }}" },
+            { "name": "request_id", "value": "={{ $('Input').item.json.request_id }}" }
+          ],
+          "boolean": [
+            { "name": "verified", "value": true }
+          ],
+          "number": [
+            { "name": "attempts_executed", "value": 2 }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9",
+      "name": "Result: RECOVERED",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [2000, 180]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "terminal_status", "value": "ESCALATED" },
+            { "name": "reason", "value": "Retry attempt failed or attempt cap reached" },
+            { "name": "request_id", "value": "={{ $('Input').item.json.request_id }}" }
+          ],
+          "boolean": [
+            { "name": "verified", "value": false }
+          ]
+        },
+        "options": {}
+      },
+      "id": "10",
+      "name": "Result: ESCALATED",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [2000, 360]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.statusCode }}",
+              "operation": "equal",
+              "value2": 200
+            }
+          ]
+        }
+      },
+      "id": "11",
+      "name": "Policy Gate: Is 200?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [880, 500]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "terminal_status", "value": "SUCCESS" },
+            { "name": "request_id", "value": "={{ $('Input').item.json.request_id }}" }
+          ],
+          "boolean": [
+            { "name": "verified", "value": true }
+          ],
+          "number": [
+            { "name": "attempts_executed", "value": 1 }
+          ]
+        },
+        "options": {}
+      },
+      "id": "12",
+      "name": "Result: SUCCESS",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1120, 440]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "terminal_status", "value": "NEEDS_REVIEW" },
+            { "name": "reason", "value": "Non-retryable status (422 Invalid Data or 401/403/500)" },
+            { "name": "request_id", "value": "={{ $('Input').item.json.request_id }}" }
+          ],
+          "boolean": [
+            { "name": "verified", "value": false }
+          ]
+        },
+        "options": {}
+      },
+      "id": "13",
+      "name": "Result: NEEDS_REVIEW",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1120, 600]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          { "node": "Input", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Input": {
+      "main": [
+        [
+          { "node": "HTTP Request: Attempt 1", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "HTTP Request: Attempt 1": {
+      "main": [
+        [
+          { "node": "Policy Gate: Is 429?", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Policy Gate: Is 429?": {
+      "main": [
+        [
+          { "node": "Wait 2s", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Policy Gate: Is 200?", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Wait 2s": {
+      "main": [
+        [
+          { "node": "Attempt 2 Input", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Attempt 2 Input": {
+      "main": [
+        [
+          { "node": "HTTP Request: Attempt 2", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "HTTP Request: Attempt 2": {
+      "main": [
+        [
+          { "node": "IF: Verified Recovery?", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "IF: Verified Recovery?": {
+      "main": [
+        [
+          { "node": "Result: RECOVERED", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Result: ESCALATED", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Policy Gate: Is 200?": {
+      "main": [
+        [
+          { "node": "Result: SUCCESS", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Result: NEEDS_REVIEW", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -33,8 +33,15 @@ GET /health and POST /api/target were visible.
 
 Outcome: PASS
 
-## Notes
+## Acceptance Tests Verified on Member B Laptop (2026-10-21)
 
-These results verify the API endpoints, not the complete
-n8n recovery workflow. Workflow-level acceptance tests
-remain pending until actually executed.
+| Test ID | Description | Expected | Actual Result | Status | Evidence File |
+|---|---|---|---|---|---|
+| **AT-08** | Fresh Terminal Run | Clones & runs without IDE state | Pytest 9 passed; 5 manual checks 200, 429, 200, 503, 422 | **PASS** | `evidence/AT-08-fresh-start.md` |
+| **AT-05** | Invalid AI JSON & Disallowed Action | Reject output, safe fallback, enforce policy | Malformed JSON & missing fields rejected; malicious action `BYPASS_AND_DELETE_ALL` blocked | **PASS** | `evidence/AT-05-invalid-ai.md` |
+| **AT-06** | LLM Unavailable & Network Down | Deterministic policy remains authoritative | Model down simulation engaged `STATIC_FALLBACK`; bounded retry executed safely | **PASS** | `evidence/AT-06-llm-fallback.md` |
+
+## Notes
+- AT-08 verifies complete clean-slate reproducibility.
+- AT-05 and AT-06 prove that AI output is safely gated behind deterministic policy checks.
+- Workflow-level runs (AT-01 through AT-04) use `workflows/flowguard-recovery.json`.
