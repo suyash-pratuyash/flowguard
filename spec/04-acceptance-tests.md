@@ -10,7 +10,7 @@ Owner: Member 3 | Actual results go in evidence/test-results.md. "Passed" = cond
 | AT-05 Invalid AI JSON | Force bad AI fields (only if AI wired) | Reject; no policy bypass; fallback/review logged | AT-05-invalid-ai.png | P2 | NOT RUN |
 | AT-06 LLM unavailable | Disable credentials/network (only if AI wired) | Deterministic path still safe | AT-06-llm-fallback.png | P2 | NOT RUN |
 | AT-07 Clean reset | Reset, rerun AT-02 | No stale attempts/events | AT-07-reset.md | P1 | NOT RUN |
-| AT-08 Fresh terminal | Follow README in new shell | API starts; calls work without IDE state | AT-08-fresh-start.md | P0 | NOT RUN |
+| AT-08 Fresh terminal | Follow README in new shell | API starts; calls work without IDE state | AT-08-fresh-start.md | P0 | PASSED (2026-10-21) |
 
 Reportable metrics only from real runs: runs passed/total with sample size, retry counts vs cap,
 mean recovery time (only if timestamps recorded). Anything else: "not measured".
