@@ -1,343 +1,945 @@
 {
-  "name": "FlowGuard Recovery Workflow",
+  "name": "flowguard-recovery",
   "nodes": [
     {
       "parameters": {},
-      "id": "1",
+      "id": "e507ae07-f582-4538-92b4-1ab697cb9f94",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [240, 300]
+      "position": [
+        0,
+        304
+      ]
     },
     {
       "parameters": {
-        "values": {
-          "string": [
-            { "name": "request_id", "value": "demo-001" },
-            { "name": "scenario", "value": "RATE_LIMIT_ONCE" },
-            { "name": "operation", "value": "SAFE_READ" }
-          ],
-          "number": [
-            { "name": "attempt", "value": 1 },
-            { "name": "max_attempts", "value": 2 }
-          ]
-        },
-        "options": {}
-      },
-      "id": "2",
-      "name": "Input",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [440, 300]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "http://127.0.0.1:8000/api/target",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({\n  request_id: $('Input').item.json.request_id,\n  scenario: $('Input').item.json.scenario,\n  attempt: $('Input').item.json.attempt,\n  payload: { requiredField: 'demo-value' }\n}) }}",
-        "options": {
-          "response": {
-            "response": {
-              "neverError": true,
-              "responseFormat": "json",
-              "fullResponse": true
-            }
-          },
-          "timeout": 3000
-        }
-      },
-      "id": "3",
-      "name": "HTTP Request: Attempt 1",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [660, 300]
-    },
-    {
-      "parameters": {
-        "dataType": "number",
-        "value1": "={{ $json.statusCode }}",
-        "rules": {
-          "rules": [
+        "assignments": {
+          "assignments": [
             {
-              "operation": "equal",
-              "value2": 429
-            }
-          ]
-        }
-      },
-      "id": "4",
-      "name": "Policy Gate: Is 429?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [880, 300]
-    },
-    {
-      "parameters": {
-        "amount": 2,
-        "unit": "seconds"
-      },
-      "id": "5",
-      "name": "Wait 2s",
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1.1,
-      "position": [1100, 240]
-    },
-    {
-      "parameters": {
-        "values": {
-          "string": [
-            { "name": "request_id", "value": "={{ $('Input').item.json.request_id }}" },
-            { "name": "scenario", "value": "={{ $('Input').item.json.scenario }}" },
-            { "name": "operation", "value": "={{ $('Input').item.json.operation }}" }
-          ],
-          "number": [
-            { "name": "attempt", "value": 2 },
-            { "name": "max_attempts", "value": 2 }
-          ]
-        },
-        "options": {}
-      },
-      "id": "6",
-      "name": "Attempt 2 Input",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [1300, 240]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "http://127.0.0.1:8000/api/target",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({\n  request_id: $('Attempt 2 Input').item.json.request_id,\n  scenario: $('Attempt 2 Input').item.json.scenario,\n  attempt: $('Attempt 2 Input').item.json.attempt,\n  payload: { requiredField: 'demo-value' }\n}) }}",
-        "options": {
-          "response": {
-            "response": {
-              "neverError": true,
-              "responseFormat": "json",
-              "fullResponse": true
-            }
-          },
-          "timeout": 3000
-        }
-      },
-      "id": "7",
-      "name": "HTTP Request: Attempt 2",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [1520, 240]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "number": [
-            {
-              "value1": "={{ $json.statusCode }}",
-              "operation": "equal",
-              "value2": 200
-            }
-          ],
-          "string": [
-            {
-              "value1": "={{ $json.body.status }}",
-              "operation": "equal",
-              "value2": "ok"
+              "id": "a1",
+              "name": "request_id",
+              "value": "demo-001",
+              "type": "string"
             },
             {
-              "value1": "={{ $json.body.request_id }}",
-              "operation": "equal",
-              "value2": "={{ $('Input').item.json.request_id }}"
+              "id": "a2",
+              "name": "scenario",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "attempt",
+              "value": 1,
+              "type": "number"
+            },
+            {
+              "id": "a4",
+              "name": "operation",
+              "value": "SAFE_READ",
+              "type": "string"
+            },
+            {
+              "id": "a5",
+              "name": "max_attempts",
+              "value": 2,
+              "type": "number"
+            },
+            {
+              "id": "a6",
+              "name": "payload",
+              "value": "={{ { requiredField: \"demo_value\" } }}",
+              "type": "object"
             }
           ]
+        },
+        "options": {}
+      },
+      "id": "c96f9456-ebea-41e9-b755-e8b2a1232048",
+      "name": "Initialize Request",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/target",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { request_id: $('Initialize Request').item.json.request_id, scenario: $('Initialize Request').item.json.scenario, attempt: $('Initialize Request').item.json.attempt, payload: $('Initialize Request').item.json.payload } }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 3000
         }
       },
-      "id": "8",
-      "name": "IF: Verified Recovery?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [1760, 240]
+      "id": "c204f227-6937-4329-a940-c7bfeb5b45a1",
+      "name": "HTTP Request - Attempt 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        464,
+        304
+      ]
     },
     {
       "parameters": {
-        "values": {
-          "string": [
-            { "name": "terminal_status", "value": "RECOVERED" },
-            { "name": "scenario", "value": "={{ $('Input').item.json.scenario }}" },
-            { "name": "request_id", "value": "={{ $('Input').item.json.request_id }}" }
-          ],
-          "boolean": [
-            { "name": "verified", "value": true }
-          ],
-          "number": [
-            { "name": "attempts_executed", "value": 2 }
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.statusCode }}",
+                    "rightValue": 200,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "s200"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "HTTP 200"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.statusCode }}",
+                    "rightValue": 429,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "s429"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "HTTP 429"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.statusCode }}",
+                    "rightValue": 503,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "s503"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "HTTP 503"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.statusCode }}",
+                    "rightValue": 422,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "s422"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "HTTP 422"
+            }
           ]
         },
-        "options": {}
+        "options": {
+          "fallbackOutput": "extra"
+        }
       },
-      "id": "9",
-      "name": "Result: RECOVERED",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [2000, 180]
-    },
-    {
-      "parameters": {
-        "values": {
-          "string": [
-            { "name": "terminal_status", "value": "ESCALATED" },
-            { "name": "reason", "value": "Retry attempt failed or attempt cap reached" },
-            { "name": "request_id", "value": "={{ $('Input').item.json.request_id }}" }
-          ],
-          "boolean": [
-            { "name": "verified", "value": false }
-          ]
-        },
-        "options": {}
-      },
-      "id": "10",
-      "name": "Result: ESCALATED",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [2000, 360]
+      "id": "943190aa-09b5-4a1c-b510-8507599ce295",
+      "name": "Classify HTTP Status",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        704,
+        304
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "number": [
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
             {
-              "value1": "={{ $json.statusCode }}",
-              "operation": "equal",
-              "value2": 200
+              "leftValue": "={{ $json.body.status }}",
+              "rightValue": "ok",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "v1"
+            },
+            {
+              "leftValue": "={{ $json.body.request_id }}",
+              "rightValue": "={{ $('Initialize Request').item.json.request_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "v2"
+            },
+            {
+              "leftValue": "={{ $json.body.attempt }}",
+              "rightValue": "={{ $('Initialize Request').item.json.attempt }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "id": "v3"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "171db64a-c2bd-49f6-8f2e-950c82bad48b",
+      "name": "Verify Initial Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        944,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Initialize Request').item.json.operation }}",
+              "rightValue": "SAFE_READ",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "p429a"
+            },
+            {
+              "leftValue": "={{ $('Initialize Request').item.json.attempt }}",
+              "rightValue": "={{ $('Initialize Request').item.json.max_attempts }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              },
+              "id": "p429b"
+            },
+            {
+              "leftValue": true,
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "id": "p429c"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2a9c0655-0050-4429-8afc-c10ae497236b",
+      "name": "Policy Gate - 429",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        944,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Initialize Request').item.json.operation }}",
+              "rightValue": "SAFE_READ",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "p503a"
+            },
+            {
+              "leftValue": "={{ $('Initialize Request').item.json.attempt }}",
+              "rightValue": "={{ $('Initialize Request').item.json.max_attempts }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              },
+              "id": "p503b"
+            },
+            {
+              "leftValue": "={{ $json.body.retryable }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "id": "p503c"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "16eacb3f-0689-46d0-82c5-892301ecef60",
+      "name": "Policy Gate - 503",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        944,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "id": "87229b00-c303-4ed1-afd7-795c9e8fb221",
+      "name": "Wait - 2 seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        256
+      ],
+      "webhookId": "e93c1e18-1d8e-41b6-8035-dabf513da6fb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "request_id",
+              "value": "={{ $('Initialize Request').item.json.request_id }}",
+              "type": "string"
+            },
+            {
+              "id": "b2",
+              "name": "scenario",
+              "value": "={{ $('Initialize Request').item.json.scenario }}",
+              "type": "string"
+            },
+            {
+              "id": "b3",
+              "name": "attempt",
+              "value": 2,
+              "type": "number"
+            },
+            {
+              "id": "b4",
+              "name": "operation",
+              "value": "={{ $('Initialize Request').item.json.operation }}",
+              "type": "string"
+            },
+            {
+              "id": "b5",
+              "name": "max_attempts",
+              "value": "={{ $('Initialize Request').item.json.max_attempts }}",
+              "type": "number"
+            },
+            {
+              "id": "b6",
+              "name": "payload",
+              "value": "={{ $('Initialize Request').item.json.payload }}",
+              "type": "object"
             }
           ]
+        },
+        "options": {}
+      },
+      "id": "34dd41db-ba81-4f87-86e1-8672113377d2",
+      "name": "Prepare Attempt 2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1424,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/target",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { request_id: $('Prepare Attempt 2').item.json.request_id, scenario: $('Prepare Attempt 2').item.json.scenario, attempt: $('Prepare Attempt 2').item.json.attempt, payload: $('Prepare Attempt 2').item.json.payload } }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 3000
         }
       },
-      "id": "11",
-      "name": "Policy Gate: Is 200?",
+      "id": "c9c9db64-f44f-4286-8ae8-6978b0c26b64",
+      "name": "HTTP Request - Attempt 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1632,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "id": "vr1"
+            },
+            {
+              "leftValue": "={{ $json.body.status }}",
+              "rightValue": "ok",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "vr2"
+            },
+            {
+              "leftValue": "={{ $json.body.request_id }}",
+              "rightValue": "={{ $('Initialize Request').item.json.request_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "vr3"
+            },
+            {
+              "leftValue": "={{ $json.body.attempt }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "id": "vr4"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c470dad8-942f-40ff-8ea9-d507557a39f7",
+      "name": "Verify Retry Success",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [880, 500]
+      "typeVersion": 2.2,
+      "position": [
+        1856,
+        256
+      ]
     },
     {
       "parameters": {
-        "values": {
-          "string": [
-            { "name": "terminal_status", "value": "SUCCESS" },
-            { "name": "request_id", "value": "={{ $('Input').item.json.request_id }}" }
-          ],
-          "boolean": [
-            { "name": "verified", "value": true }
-          ],
-          "number": [
-            { "name": "attempts_executed", "value": 1 }
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fg-recovered-0",
+              "name": "request_id",
+              "value": "={{ $('Initialize Request').item.json.request_id }}",
+              "type": "string"
+            },
+            {
+              "id": "fg-recovered-1",
+              "name": "terminal_status",
+              "value": "RECOVERED",
+              "type": "string"
+            },
+            {
+              "id": "fg-recovered-2",
+              "name": "verified",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "fg-recovered-3",
+              "name": "attempts",
+              "value": 2,
+              "type": "number"
+            },
+            {
+              "id": "fg-recovered-4",
+              "name": "initial_http_status",
+              "value": 429,
+              "type": "number"
+            },
+            {
+              "id": "fg-recovered-5",
+              "name": "final_http_status",
+              "value": "={{ $json.statusCode }}",
+              "type": "number"
+            },
+            {
+              "id": "fg-recovered-6",
+              "name": "recovery_action",
+              "value": "WAIT_THEN_RETRY",
+              "type": "string"
+            }
           ]
         },
         "options": {}
       },
-      "id": "12",
-      "name": "Result: SUCCESS",
+      "id": "1cb1f128-6913-452b-a9ff-cd9e9e335136",
+      "name": "Record Outcome - RECOVERED",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [1120, 440]
+      "position": [
+        2112,
+        192
+      ]
     },
     {
       "parameters": {
-        "values": {
-          "string": [
-            { "name": "terminal_status", "value": "NEEDS_REVIEW" },
-            { "name": "reason", "value": "Non-retryable status (422 Invalid Data or 401/403/500)" },
-            { "name": "request_id", "value": "={{ $('Input').item.json.request_id }}" }
-          ],
-          "boolean": [
-            { "name": "verified", "value": false }
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fg-success-0",
+              "name": "request_id",
+              "value": "={{ $('Initialize Request').item.json.request_id }}",
+              "type": "string"
+            },
+            {
+              "id": "fg-success-1",
+              "name": "terminal_status",
+              "value": "SUCCESS",
+              "type": "string"
+            },
+            {
+              "id": "fg-success-2",
+              "name": "verified",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "fg-success-3",
+              "name": "attempts",
+              "value": 1,
+              "type": "number"
+            },
+            {
+              "id": "fg-success-4",
+              "name": "final_http_status",
+              "value": "={{ $json.statusCode }}",
+              "type": "number"
+            }
           ]
         },
         "options": {}
       },
-      "id": "13",
-      "name": "Result: NEEDS_REVIEW",
+      "id": "e16ec90a-94c2-4ff4-84f1-dd238d5e31d5",
+      "name": "Record Outcome - SUCCESS",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [1120, 600]
+      "position": [
+        1184,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fg-escalated-0",
+              "name": "request_id",
+              "value": "={{ $('Initialize Request').item.json.request_id }}",
+              "type": "string"
+            },
+            {
+              "id": "fg-escalated-1",
+              "name": "terminal_status",
+              "value": "ESCALATED",
+              "type": "string"
+            },
+            {
+              "id": "fg-escalated-2",
+              "name": "verified",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "fg-escalated-3",
+              "name": "reason",
+              "value": "Retry not permitted, retry failed, or response could not be verified.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a86fe6e6-1d01-46fd-8ee0-1575ad791b71",
+      "name": "Record Outcome - ESCALATED",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1184,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fg-review-0",
+              "name": "request_id",
+              "value": "={{ $('Initialize Request').item.json.request_id }}",
+              "type": "string"
+            },
+            {
+              "id": "fg-review-1",
+              "name": "terminal_status",
+              "value": "NEEDS_REVIEW",
+              "type": "string"
+            },
+            {
+              "id": "fg-review-2",
+              "name": "verified",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "fg-review-3",
+              "name": "reason",
+              "value": "HTTP 422: invalid data; no retry performed.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d8299722-d6fa-4e4e-a913-464112e2765b",
+      "name": "Record Outcome - NEEDS_REVIEW",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fg-unexpected-0",
+              "name": "request_id",
+              "value": "={{ $('Initialize Request').item.json.request_id }}",
+              "type": "string"
+            },
+            {
+              "id": "fg-unexpected-1",
+              "name": "terminal_status",
+              "value": "ESCALATED",
+              "type": "string"
+            },
+            {
+              "id": "fg-unexpected-2",
+              "name": "verified",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "fg-unexpected-3",
+              "name": "observed_http_status",
+              "value": "={{ $json.statusCode ?? null }}",
+              "type": "number"
+            },
+            {
+              "id": "fg-unexpected-4",
+              "name": "reason",
+              "value": "Unexpected HTTP status; automatic retry stopped.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3925bfdb-7b04-4438-906e-cdf6564d5599",
+      "name": "Record Outcome - Unexpected Status",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        864
+      ]
     }
   ],
+  "pinData": {},
   "connections": {
     "Manual Trigger": {
       "main": [
         [
-          { "node": "Input", "type": "main", "index": 0 }
+          {
+            "node": "Initialize Request",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
-    "Input": {
+    "Initialize Request": {
       "main": [
         [
-          { "node": "HTTP Request: Attempt 1", "type": "main", "index": 0 }
+          {
+            "node": "HTTP Request - Attempt 1",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
-    "HTTP Request: Attempt 1": {
+    "HTTP Request - Attempt 1": {
       "main": [
         [
-          { "node": "Policy Gate: Is 429?", "type": "main", "index": 0 }
+          {
+            "node": "Classify HTTP Status",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
-    "Policy Gate: Is 429?": {
+    "Classify HTTP Status": {
       "main": [
         [
-          { "node": "Wait 2s", "type": "main", "index": 0 }
+          {
+            "node": "Verify Initial Success",
+            "type": "main",
+            "index": 0
+          }
         ],
         [
-          { "node": "Policy Gate: Is 200?", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "Wait 2s": {
-      "main": [
-        [
-          { "node": "Attempt 2 Input", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "Attempt 2 Input": {
-      "main": [
-        [
-          { "node": "HTTP Request: Attempt 2", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "HTTP Request: Attempt 2": {
-      "main": [
-        [
-          { "node": "IF: Verified Recovery?", "type": "main", "index": 0 }
-        ]
-      ]
-    },
-    "IF: Verified Recovery?": {
-      "main": [
-        [
-          { "node": "Result: RECOVERED", "type": "main", "index": 0 }
+          {
+            "node": "Policy Gate - 429",
+            "type": "main",
+            "index": 0
+          }
         ],
         [
-          { "node": "Result: ESCALATED", "type": "main", "index": 0 }
+          {
+            "node": "Policy Gate - 503",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Outcome - NEEDS_REVIEW",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Outcome - Unexpected Status",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
-    "Policy Gate: Is 200?": {
+    "Verify Initial Success": {
       "main": [
         [
-          { "node": "Result: SUCCESS", "type": "main", "index": 0 }
+          {
+            "node": "Record Outcome - SUCCESS",
+            "type": "main",
+            "index": 0
+          }
         ],
         [
-          { "node": "Result: NEEDS_REVIEW", "type": "main", "index": 0 }
+          {
+            "node": "Record Outcome - Unexpected Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy Gate - 429": {
+      "main": [
+        [
+          {
+            "node": "Wait - 2 seconds",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Outcome - ESCALATED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy Gate - 503": {
+      "main": [
+        [
+          {
+            "node": "Wait - 2 seconds",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Outcome - ESCALATED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait - 2 seconds": {
+      "main": [
+        [
+          {
+            "node": "Prepare Attempt 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Attempt 2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Attempt 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Attempt 2": {
+      "main": [
+        [
+          {
+            "node": "Verify Retry Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Retry Success": {
+      "main": [
+        [
+          {
+            "node": "Record Outcome - RECOVERED",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Outcome - ESCALATED",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     }
   },
+  "active": false,
   "settings": {
-    "executionOrder": "v1"
-  }
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a3de93a8-c224-44aa-969e-3ba78b1b99ef",
+  "meta": {
+    "instanceId": "355b48a0d9df5c6c4b4370c336480842eb5668b9e03df0cc58a55312099c66d0"
+  },
+  "nodeGroups": [],
+  "id": "e62WBuoAqXwHNtSD",
+  "tags": []
 }
