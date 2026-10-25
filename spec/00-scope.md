@@ -39,5 +39,5 @@ invented metrics or mentor feedback.
 | n8n recovery workflow | planned |
 | Policy gate (n8n IF/Switch) | planned |
 | Audit log (JSONL) | planned |
-| LLM diagnosis | planned |
+| LLM diagnosis | implemented (spec/06-ai-diagnosis.md, policy gate allowlist and AT-05/AT-06 verified on 2026-10-21) |
 | Dashboard / UI | planned (optional) |
